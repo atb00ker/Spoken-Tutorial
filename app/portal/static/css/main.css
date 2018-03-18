@@ -1,0 +1,62 @@
+#logo-container, .header, .section_header {
+    font-family: 'Francois One', sans-serif;
+}
+#message_section {
+    min-height: 40vh;
+}
+nav {
+    background-color: #333;
+}
+#ctaBtn{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Admin Page */
+.adminItemDesc {
+    text-align: center;
+}
+
+/* Forms */
+#form_section {
+    width: 100%;
+    padding: 20px;
+    min-height: 50vh;
+}
+@media all and (min-width: 500px) {
+    #form_section {
+        width: 70%;
+        min-height: 50vh;
+    }
+}
+
+.errorlist {
+    color: red;
+    border: 1px red solid;
+    border-radius: 3px;
+    text-align: center;
+}
+.errorlist li {
+    padding: 7px;
+}
+/* Custom scroll bar styles */
+    /* width */
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }

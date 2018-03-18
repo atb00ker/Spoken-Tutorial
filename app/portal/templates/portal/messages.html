@@ -1,0 +1,13 @@
+<!-- including the _base.html templates -->
+{% extends 'components/_base.html' %}
+{%block title%} {{ community.community_name }} {%endblock%}
+<!-- referring to the block in base.html -->
+{% block content %}
+<!-- signup form  -->
+<div class="container">
+    <h1 class='section_header'>{{ msg_page_name }}</h1>
+    <div id='message_section'>
+        {{ message }}
+    </div>
+</div>
+{% endblock %}
