@@ -1,6 +1,5 @@
 <!-- including the _base.html templates -->
-{% extends 'components/_base.html' %}
-{%block title%} {{ form_page_name }} {%endblock%}
+{% extends 'components/_base.html' %} {%block title%} {{ form_page_name }} {%endblock%}
 <!-- referring to the block in base.html -->
 {% block content %}
 <!-- signup form  -->
@@ -11,7 +10,7 @@
             {% csrf_token %}
             <!-- Django will take care of spiting the form. -->
             {{ form.as_p }}
-            <button type="submit" class="btn-large waves-effect waves-light {{ community.site_theme_text }}">Create my account</button>
+            <button type="submit" class="btn-large waves-effect waves-light {{ community.site_theme_text }}">{{ submit_btn_name }}</button>
         </form>
     </div>
 </div>

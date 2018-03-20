@@ -1,51 +1,58 @@
 <!-- including the _base.html templates -->
-{% extends 'components/_base.html' %}
-{%block title%} Spoken-Tutorials {%endblock%}
+{% extends 'components/_base.html' %} {%block title%} Spoken-Tutorials {%endblock%}
 <!-- referring to the block in base.html -->
 {% block content %}
 <div class="section no-pad-bot" id="index-banner">
     <div class="container">
-      <br><br>
-      <h1 class="header center">Administrator Panel</h1>
-      <div class="row">
-          <div class="col s12 m4">
-              <div class="icon-block">
-                  <h2 class="center"><i class="fas fa-pen-square"></i></h2>
-                  <h5 class="center">FOSS</h5>
-                  <p class="adminItemDesc">
-                      Click the button below to add a foss, designate a contributor or deadline.
-                  </p>
-                  <div style='position: relative;'>
-                      <a id="ctaBtn" class="btn waves-effect waves-light blue" href="{% url 'edit_foss' %}">Edit</a>
-                  </div>
-              </div>
-          </div>
-          <div class="col s12 m4">
-              <div class="icon-block">
-                  <h2 class="center"><i class="fas fa-video"></i></h2>
-                  <h5 class="center">Submissions</h5>
-                  <p class="adminItemDesc">
-                       A list of tutorials contributed with expected submission date and actual submission date for one calendar month.
-                  </p>
-                  <div style='position: relative;'>
-                      <!-- <a id="ctaBtn" class="btn waves-effect waves-light blue" href="{% url 'edit_foss' %}">FOSS</a> -->
-                  </div>
-              </div>
-          </div>
-          <div class="col s12 m4">
-              <div class="icon-block">
-                  <h2 class="center"><i class="fas fa-credit-card"></i></h2>
-                  <h5 class="center">Payment</h5>
-                  <p class="adminItemDesc">
-                      Number of published tutorials that each contributor has submitted in one calendar month their payment.
-                  </p>
-                  <div style='position: relative;'>
-                      <!-- <a id="ctaBtn" class="btn waves-effect waves-light blue" href="{% url 'edit_foss' %}">FOSS</a> -->
-                  </div>
-              </div>
-          </div>
-      </div>
-      <br><br>
+        <br>
+        <br>
+        <h1 class="header center">Administrator Panel</h1>
+        <div class="row">
+            <div class="col s12 m4">
+                <div class="icon-block">
+                    <h2 class="center">
+                        <i class="fas fa-pen-square"></i>
+                    </h2>
+                    <h5 class="center">FOSS</h5>
+                    <p class="adminItemDesc">
+                        Click the button below to add a foss, designate a contributor or deadline.
+                    </p>
+                    <div style='position: relative;'>
+                        <a id="ctaBtn" class="btn waves-effect waves-light blue" href="{% url 'edit_foss' %}">Edit</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m4">
+                <div class="icon-block">
+                    <h2 class="center">
+                        <i class="fas fa-video"></i>
+                    </h2>
+                    <h5 class="center">Submissions</h5>
+                    <p class="adminItemDesc">
+                        A list of tutorials contributed with expected submission date and actual submission date for one calendar month.
+                    </p>
+                    <div style='position: relative;'>
+                        <!-- <a id="ctaBtn" class="btn waves-effect waves-light blue" href="{% url 'edit_foss' %}">FOSS</a> -->
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m4">
+                <div class="icon-block">
+                    <h2 class="center">
+                        <i class="fas fa-credit-card"></i>
+                    </h2>
+                    <h5 class="center">Payment</h5>
+                    <p class="adminItemDesc">
+                        Number of published tutorials that each contributor has submitted in one calendar month their payment.
+                    </p>
+                    <div style='position: relative;'>
+                        <a id="ctaBtn" class="btn waves-effect waves-light blue" href="{% url 'payment' %}">Pay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
     </div>
 </div>
 {% endblock %}

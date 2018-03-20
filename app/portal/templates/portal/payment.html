@@ -1,0 +1,46 @@
+<!-- including the _base.html templates -->
+{% extends 'components/_base.html' %} {%block title%} Payment {%endblock%}
+<!-- referring to the block in base.html -->
+{% block content %}
+<!-- signup form  -->
+<div class="container">
+    <h1 class='section_header'>Payment</h1>
+    {% if table %}
+    <table class="striped highlight">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Deadline</th>
+                <th>Submitted On</th>
+                <th>Published</th>
+                <th>Paid</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table %}
+            <tr>
+                <td>
+                    {{ row.title }}</td>
+                <td>{{ row.expected_submission_date }}</td>
+                <td>{{ row.actual_submission_date }}</td>
+                <td>
+                    {% if row.is_published %}
+                    <i class="green-text fas fa-check"></i> {% else %}
+                    <i class="red-text fas fa-times"></i> {% endif %}
+                </td>
+                <td>
+                    {% if row.is_paid %}
+                    <i class="green-text fas fa-check"></i> {% else %}
+                    <button>Pay</button> {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div id='message_section'>
+        No Records exist for the selected condition.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

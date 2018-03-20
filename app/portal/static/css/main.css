@@ -30,7 +30,10 @@ nav {
         min-height: 50vh;
     }
 }
-
+form p select {
+    height: 40px;
+    display: inline-block;
+}
 .errorlist {
     color: red;
     border: 1px red solid;
