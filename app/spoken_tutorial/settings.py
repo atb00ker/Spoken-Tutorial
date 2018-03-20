@@ -70,6 +70,7 @@ DATABASES = {
         'PASSWORD': 'MY_AWESOME_PASSWORD',
         'HOST': 'localhost',
         'PORT': '',
+        'ATOMIC_REQUESTS': True,
     }
 }
 

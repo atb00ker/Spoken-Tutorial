@@ -4,7 +4,9 @@ from django.db.models import Q
 from django.contrib.auth import login, authenticate
 from .forms import FossCreationForm, PaymentForm, FossSubmissionForm
 from portal.models import foss, payment, tutorial_detail
+from django.contrib.auth.models import User
 from django.views import View
+import datetime
 
 
 def dashboard(request):
@@ -82,3 +84,31 @@ class UserPayment(View):
                                                              "form": form})
             else:
                 redirect('/login')
+
+
+def pay(request, foss_id, tut_id):
+    if request.user.is_authenticated:
+        is_admin = request.user.groups.filter(name='admin').exists()
+        if is_admin:
+            tut_id = (tutorial_detail.objects.get(pk=tut_id))
+            if tut_id.is_paid:
+                return render(request, 'portal/messages.html', {
+                    "msg_page_name": 'Failed', 'message': 'Looks like the transaction is not allowed, since the payment has already been made, if you think this is a mistake, please contact the administrator.', 'is_admin': is_admin})
+            else:
+                try:
+                    username = (foss.objects.get(pk=foss_id)).user
+                    data = payment(payment_for=username, amount=1000,
+                                   date=datetime.datetime.now(), approved_by=request.user)
+                    tut_id.is_paid = True
+                    data.save()
+                    tut_id.save()
+                    return render(request, 'portal/messages.html', {
+                        "msg_page_name": 'Success', 'message': 'Payment has been successfully made for the user.', 'is_admin': is_admin})
+                except:
+                    return render(request, 'portal/messages.html', {
+                        "msg_page_name": 'Failed', 'message': 'Something went wrong during the transaction, please try again.', 'is_admin': is_admin})
+        else:
+            return render(request, 'portal/messages.html', {
+                "msg_page_name": 'Failed', 'message': 'You do not have the access to make the transaction, please login from a administrator account.', 'is_admin': is_admin})
+    else:
+        redirect('/login')

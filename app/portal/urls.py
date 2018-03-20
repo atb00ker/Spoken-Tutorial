@@ -13,6 +13,7 @@ urlpatterns = [
     # Features
     path('edit_foss/', views.edit_foss, name='edit_foss'),
     path('payment/', views.UserPayment.as_view(), name='payment'),
+    path('pay/<foss_id>/<tut_id>', views.pay, name='pay'),
     # Accounts
     path('login/', login, {
         'redirect_authenticated_user': True,
