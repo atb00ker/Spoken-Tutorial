@@ -20,9 +20,9 @@ class tutorial_detail(models.Model):
     actual_submission_date = models.DateTimeField(null=True, blank=True)
     expected_submission_date = models.DateTimeField()
     is_published = models.BooleanField(default=False)
-    is_paid = models.BooleanField(default=False)
     assigned_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    foss = models.ForeignKey(foss, on_delete=models.CASCADE)
+    foss = models.ForeignKey(
+        foss, on_delete=models.CASCADE, related_name='user_details')
     title = models.CharField(max_length=250)
 
     def __str__(self):

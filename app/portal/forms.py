@@ -12,13 +12,13 @@ class FossCreationForm(forms.Form):
     expected_submission_date = forms.CharField()
 
 
-class PaymentForm(forms.Form):
+class CalendarForm(forms.Form):
     '''
     Takes in information to show payments.
     '''
     month_type_list = (
-        ('Actual', 'Actual Submission'),
-        ('Deadline', 'Deadline'),
+        ('actual', 'Actual Submission'),
+        ('expected', 'Deadline'),
     )
     month_list = (
         ('1', 'January'),
