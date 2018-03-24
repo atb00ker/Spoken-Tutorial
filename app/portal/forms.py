@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+from portal.models import foss
+import datetime
 
 
 class FossCreationForm(forms.Form):
@@ -7,9 +9,19 @@ class FossCreationForm(forms.Form):
     Takes in Fields that are required for creating a foss.
     '''
     title = forms.CharField()
-    assigned_to = forms.CharField()
-    assigned_by = forms.CharField()
-    expected_submission_date = forms.CharField()
+    Assigned_to = forms.ModelChoiceField(queryset=User.objects
+                                         .filter(is_superuser=False)
+                                         .exclude(groups__name='admin'),
+                                         required=False)
+
+
+class TutorialCreationForm(forms.Form):
+    '''
+    Takes in Fields that are required for creating a foss.
+    '''
+    title = forms.CharField()
+    Deadline = forms.DateTimeField(
+        initial=datetime.datetime.now())
 
 
 class CalendarForm(forms.Form):
@@ -36,14 +48,5 @@ class CalendarForm(forms.Form):
     )
     month_type = forms.ChoiceField(
         label='Submitted',
-        choices=month_type_list, required=False)
-    month = forms.ChoiceField(
-        choices=month_list, required=False)
-
-
-class FossSubmissionForm(forms.Form):
-    '''
-    Takes in information to show payments.
-    '''
-    expected_submission_month = forms.CharField()
-    actual_submission_month = forms.CharField()
+        choices=month_type_list)
+    month = forms.ChoiceField(choices=month_list)

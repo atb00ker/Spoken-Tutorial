@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.db.models import Q
+from django.urls import reverse
 from django.contrib.auth import login, authenticate
-from .forms import FossCreationForm, CalendarForm, FossSubmissionForm
+from .forms import FossCreationForm, CalendarForm, TutorialCreationForm
 from portal.models import foss, payment, tutorial_detail
 from .listGenerator import listGenerator
 from django.utils import timezone
@@ -29,22 +30,121 @@ def admin_panel(request):
         if is_admin:
             return render(request, 'portal/admin_panel.html', {'is_admin': is_admin})
         else:
-            return redirect('/login')
+            return redirect('login')
     else:
-        return redirect('/login')
+        return redirect('login')
 
 
-def edit_foss(request):
+def viewFossTable(request):
     if request.user.is_authenticated:
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:
-            form = FossCreationForm()
-            return render(request, 'portal/forms.html', {'form': form,
-                                                         "form_page_name": 'Create Foss', 'submit_btn_name': "Create Foss", 'is_admin': is_admin})
+            table = foss.objects.all()
+            return render(request, 'portal/viewFossTable.html', {
+                'table': table,
+                'is_admin': is_admin})
         else:
-            return redirect('/login')
+            return redirect('login')
     else:
-        return redirect('/login')
+        return redirect('login')
+
+
+def viewFossDetails(request, foss):
+    if request.user.is_authenticated:
+        is_admin = request.user.groups.filter(name='admin').exists()
+        if is_admin:
+            table = tutorial_detail.objects.filter(foss=foss)
+            return render(request, 'portal/viewFossDetails.html', {
+                'foss': foss,
+                'table': table,
+                'is_admin': is_admin})
+        else:
+            return redirect('login')
+    else:
+        return redirect('login')
+
+
+class AddFossTutorial(View):
+    '''
+    This class handles the form used to create new tutorial in a FOSS.
+    '''
+
+    def get(self, request, foss_id):
+        if request.user.is_authenticated:
+            is_admin = request.user.groups.filter(name='admin').exists()
+            if is_admin:
+                form = TutorialCreationForm()
+                return render(request, 'portal/forms.html', {'form': form,
+                                                             "form_page_name": 'Create Tutorial',
+                                                             'submit_btn_name': "Create Tutorial",
+                                                             'is_admin': is_admin})
+            else:
+                return redirect('login')
+        else:
+            return redirect('login')
+
+    def post(self, request, foss_id):
+        if request.user.is_authenticated:
+            is_admin = request.user.groups.filter(name='admin').exists()
+            if is_admin:
+                form = TutorialCreationForm(request.POST)
+                if form.is_valid():
+                    data = tutorial_detail(
+                        title=form.cleaned_data['title'],
+                        assigned_by=request.user,
+                        foss=foss.objects.get(pk=foss_id),
+                        expected_submission_date=form.cleaned_data['Deadline'])
+                    data.save()
+                    return redirect('viewFossDetails', foss_id)
+                else:
+                    return render(request, 'portal/forms.html', {'form': form,
+                                                                 "form_page_name": 'Create Tutorial',
+                                                                 'submit_btn_name': "Create Tutorial",
+                                                                 'is_admin': is_admin})
+            else:
+                return redirect('login')
+        else:
+            return redirect('login')
+
+
+class CreateFOSS(View):
+    '''
+    This class handles the form used to create new FOSS.
+    '''
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            is_admin = request.user.groups.filter(name='admin').exists()
+            if is_admin:
+                form = FossCreationForm()
+                return render(request, 'portal/forms.html', {'form': form,
+                                                             "form_page_name": 'Create Foss',
+                                                             'submit_btn_name': "Create Foss",
+                                                             'is_admin': is_admin})
+            else:
+                return redirect('login')
+        else:
+            return redirect('login')
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            is_admin = request.user.groups.filter(name='admin').exists()
+            if is_admin:
+                form = FossCreationForm(request.POST)
+                if form.is_valid():
+                    data = foss(
+                        title=form.cleaned_data['title'], user=form.cleaned_data['Assigned_to'])
+                    data.save()
+                    return redirect('viewFossTable')
+                else:
+                    return render(request, 'portal/forms.html', {'form': form,
+                                                                 "form_page_name": 'Create Foss',
+                                                                 'submit_btn_name': "Create Foss",
+                                                                 'is_admin': is_admin})
+            else:
+                return redirect('login')
+        else:
+            return redirect('login')
 
 
 class UserSubmissions(View):
@@ -63,9 +163,9 @@ class UserSubmissions(View):
                                                              'is_admin': is_admin,
                                                              "form": form})
             else:
-                return redirect('/login')
+                return redirect('login')
         else:
-            return redirect('/login')
+            return redirect('login')
 
     def post(self, request):
         form = CalendarForm(request.POST)
@@ -85,7 +185,7 @@ class UserSubmissions(View):
                                                              'is_admin': is_admin,
                                                              "form": form})
             else:
-                return redirect('/login')
+                return redirect('login')
 
 
 def publish(request, foss_id, tut_id):
@@ -109,7 +209,7 @@ def publish(request, foss_id, tut_id):
             return render(request, 'portal/messages.html', {
                 "msg_page_name": 'Failed', 'message': 'You do not have the access to make the transaction, please login from an administrator account.', 'is_admin': is_admin})
     else:
-        return redirect('/login')
+        return redirect('login')
 
 
 class UserPayment(View):
@@ -128,9 +228,9 @@ class UserPayment(View):
                                                              'is_admin': is_admin,
                                                              "form": form})
             else:
-                return redirect('/login')
+                return redirect('login')
         else:
-            return redirect('/login')
+            return redirect('login')
 
     def post(self, request):
         form = CalendarForm(request.POST)
@@ -165,7 +265,7 @@ class UserPayment(View):
                                                              'is_admin': is_admin,
                                                              "form": form})
             else:
-                return redirect('/login')
+                return redirect('login')
 
 
 def pay(request, username, multiplier, month):
@@ -193,4 +293,4 @@ def pay(request, username, multiplier, month):
             return render(request, 'portal/messages.html', {
                 "msg_page_name": 'Failed', 'message': 'You do not have the access to make the transaction, please login from an administrator account.', 'is_admin': is_admin})
     else:
-        return redirect('/login')
+        return redirect('login')

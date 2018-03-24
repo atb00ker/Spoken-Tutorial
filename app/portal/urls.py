@@ -12,7 +12,13 @@ urlpatterns = [
     path('admin_panel/', views.admin_panel, name='admin_panel'),
 
     # Features
-    path('edit_foss/', views.edit_foss, name='edit_foss'),
+    path('FossTable/', views.viewFossTable, name='viewFossTable'),
+    path('FossDetails/<foss>', views.viewFossDetails, name='viewFossDetails'),
+    path('AddFossTutorial/<foss_id>',
+         views.AddFossTutorial.as_view(), name='addFossTutorial'),
+    path('CreateFoss/', views.CreateFOSS.as_view(), name='addNewFoss'),
+
+
     path('submissions/', views.UserSubmissions.as_view(), name='submissions'),
     path('publish/<foss_id>/<tut_id>',
          views.publish, name='publish'),
