@@ -5,6 +5,7 @@ venv/
 __pycache__/
 migrations/
 *.pyc
+*.log
 
 ## Text Editor ##
 .vscode/

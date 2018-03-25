@@ -1,9 +1,9 @@
 '''
-This file is used for 
+This file is used for
 1. Registering the portal models in auth.admin
-2. Creating a group called 'admin' an allowing it the 
+2. Creating a group called 'admin' an allowing it the
 permissions to all the portal modals.
-3. Giving administrator panel access to 
+3. Giving administrator panel access to
 all the superusers by entering them in the 'admin' group.
 '''
 

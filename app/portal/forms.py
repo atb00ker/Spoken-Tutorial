@@ -31,7 +31,7 @@ class TutorialCreationForm(forms.Form):
 
 class CalendarForm(forms.Form):
     '''
-    Takes in information to show payments or 
+    Takes in information to show payments or
     Submissions for the selected month.
     '''
     month_type_list = (

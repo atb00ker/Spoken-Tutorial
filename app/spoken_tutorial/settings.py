@@ -1,4 +1,5 @@
 import os
+import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -113,3 +114,14 @@ LOGOUT_REDIRECT_URL = 'dashboard'
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+logger = logging.getLogger("PaymentPortalErrors")
+formatter = logging.Formatter(
+    '%(filename)s[%(lineno)d]: %(message)s')
+handler = logging.FileHandler('PaymentPortalErrors.log')
+handler.setFormatter(formatter)
+streamHandle = logging.StreamHandler()
+streamHandle.setFormatter(formatter)
+logger.addHandler(handler)
+logger.addHandler(streamHandle)
+logger.setLevel(logging.ERROR)

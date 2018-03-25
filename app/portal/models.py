@@ -1,5 +1,5 @@
 '''
-This file is used to create all the 
+This file is used to create all the
 database tables that are required for the
 portal app.
 '''
@@ -26,7 +26,7 @@ class foss(models.Model):
 
 class tutorial_detail(models.Model):
     '''
-    Please find models' description on http://bit.do/STModels 
+    Please find models' description on http://bit.do/STModels
     in tabular form.
     '''
     tut_id = models.AutoField(primary_key=True)
