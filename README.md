@@ -27,4 +27,7 @@ The following are the instructions to install the the application in the workben
         1. Open `app/spoken_tutorial/settings.py` and navigate to line `'PASSWORD': 'MY_AWESOME_PASSWORD',` and set your password here.
         2. Inside the virtual environment, run `python3 manage.py makemigrations`
         3. Inside the virtual environment, run `python3 manage.py migrate`
-5. Run the server: inside virtual-environment, run `python3 manage.py runserver`. Now, go to `127.0.0.1:8000/`, your welcome page should show up.
+5. Run the server: inside virtual-environment, run `python3 manage.py createsuperuser` to create a user that can access the admin panel.
+6. Run the server: inside virtual-environment, run `python3 manage.py runserver`. Now, go to `127.0.0.1:8000/`, welcome page should show up.
+7. Login using the superuser you just created to access the 'Administrator Panel'.
+8. You can go to '/admin' when you are logged in from your superuser to make new users and make a user in group 'admin' to allow it to access 'Administration Panel' only.

@@ -14,17 +14,20 @@ import datetime
 
 
 def dashboard(request):
+    '''
+    This function will render Dashboard if logged in else render landing page
+    '''
     if request.user.is_authenticated:
-        if request.user.is_superuser:
-            return redirect('/admin')
-        else:
-            is_admin = request.user.groups.filter(name='admin').exists()
-            return render(request, 'portal/dashboard.html', {'is_admin': is_admin})
+        is_admin = request.user.groups.filter(name='admin').exists()
+        return render(request, 'portal/dashboard.html', {'is_admin': is_admin})
     else:
         return render(request, 'index.html')
 
 
 def admin_panel(request):
+    '''
+    This function will render administrator panel if admin else redirect to login
+    '''
     if request.user.is_authenticated:
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:
@@ -36,6 +39,9 @@ def admin_panel(request):
 
 
 def viewFossTable(request):
+    '''
+    View all foss in a table
+    '''
     if request.user.is_authenticated:
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:
@@ -50,6 +56,9 @@ def viewFossTable(request):
 
 
 def viewFossDetails(request, foss):
+    '''
+    View details about the selected foss
+    '''
     if request.user.is_authenticated:
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:
@@ -189,6 +198,10 @@ class UserSubmissions(View):
 
 
 def publish(request, foss_id, tut_id):
+    '''
+    If the administrator decides to publish a tutorial,
+    the request is send to this function.
+    '''
     if request.user.is_authenticated:
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:
@@ -269,6 +282,10 @@ class UserPayment(View):
 
 
 def pay(request, username, multiplier, month):
+    '''
+    If the adinistrator decides to pay a contributor for 
+    a month the request is transfered to this page.
+    '''
     if request.user.is_authenticated:
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:

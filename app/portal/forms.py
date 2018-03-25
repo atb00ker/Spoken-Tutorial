@@ -1,3 +1,7 @@
+'''
+This file is used to create forms that are used in
+the portal app.
+'''
 from django import forms
 from django.contrib.auth.models import User
 from portal.models import foss
@@ -17,7 +21,8 @@ class FossCreationForm(forms.Form):
 
 class TutorialCreationForm(forms.Form):
     '''
-    Takes in Fields that are required for creating a foss.
+    Takes in Fields that are required for creating a new
+    Tutorial.
     '''
     title = forms.CharField()
     Deadline = forms.DateTimeField(
@@ -26,7 +31,8 @@ class TutorialCreationForm(forms.Form):
 
 class CalendarForm(forms.Form):
     '''
-    Takes in information to show payments.
+    Takes in information to show payments or 
+    Submissions for the selected month.
     '''
     month_type_list = (
         ('actual', 'Actual Submission'),

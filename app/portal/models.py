@@ -1,8 +1,17 @@
+'''
+This file is used to create all the 
+database tables that are required for the
+portal app.
+'''
 from django.db import models
 from django.contrib.auth.models import User
 
 
 class foss(models.Model):
+    '''
+    Please find models' description on http://bit.do/STModels
+    in tabular form.
+    '''
     foss_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
@@ -16,6 +25,10 @@ class foss(models.Model):
 
 
 class tutorial_detail(models.Model):
+    '''
+    Please find models' description on http://bit.do/STModels 
+    in tabular form.
+    '''
     tut_id = models.AutoField(primary_key=True)
     actual_submission_date = models.DateTimeField(null=True, blank=True)
     expected_submission_date = models.DateTimeField()
@@ -30,6 +43,10 @@ class tutorial_detail(models.Model):
 
 
 class payment(models.Model):
+    '''
+    Please find models' description on http://bit.do/STModels
+    in tabular form.
+    '''
     payment_for = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='user')
     amount = models.IntegerField(default=0)

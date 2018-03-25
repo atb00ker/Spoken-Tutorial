@@ -18,10 +18,11 @@ urlpatterns = [
          views.AddFossTutorial.as_view(), name='addFossTutorial'),
     path('CreateFoss/', views.CreateFOSS.as_view(), name='addNewFoss'),
 
-
+    # Publish
     path('submissions/', views.UserSubmissions.as_view(), name='submissions'),
     path('publish/<foss_id>/<tut_id>',
          views.publish, name='publish'),
+
     # Payment
     path('payment/', views.UserPayment.as_view(), name='payment'),
     path('pay/<username>/<multiplier>/<month>', views.pay, name='pay'),

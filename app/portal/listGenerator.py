@@ -3,7 +3,7 @@ The function in this file takes in the payments
 to be made in selected month and produces a new 
 list in which each user's record is merge into 
 one and total amount that needs to be paid is 
-shown. 
+displayed. 
 '''
 
 
