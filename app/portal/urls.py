@@ -11,21 +11,22 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('admin_panel/', views.admin_panel, name='admin_panel'),
 
-    # Features
+    # Foss and Tutorial Tables
     path('FossTable/', views.viewFossTable, name='viewFossTable'),
     path('FossDetails/<foss>', views.viewFossDetails, name='viewFossDetails'),
     path('AddFossTutorial/<foss_id>',
          views.AddFossTutorial.as_view(), name='addFossTutorial'),
     path('CreateFoss/', views.CreateFOSS.as_view(), name='addNewFoss'),
+    path('submitted/', views.submitted, name='submitted'),
 
     # Publish
     path('submissions/', views.UserSubmissions.as_view(), name='submissions'),
-    path('publish/<foss_id>/<tut_id>',
+    path('publish/',
          views.publish, name='publish'),
 
     # Payment
     path('payment/', views.UserPayment.as_view(), name='payment'),
-    path('pay/<username>/<multiplier>/<month>', views.pay, name='pay'),
+    path('pay/', views.pay, name='pay'),
 
     # Accounts
     path('login/', login, {

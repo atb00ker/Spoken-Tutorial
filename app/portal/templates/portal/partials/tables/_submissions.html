@@ -1,0 +1,28 @@
+{% spaceless %}
+<table class="striped highlight">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Deadline</th>
+            <th>Submitted On</th>
+            <th>Published</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in table %}
+        <tr>
+            <td>{{ row.title }}</td>
+            <td>{{ row.expected_submission_date }}</td>
+            <td>{{ row.actual_submission_date }}</td>
+            <td>
+                {% if row.is_published %}
+                <i class="green-text fas fa-check"></i>
+                {% elif row.actual_submission_date == None %}
+                <a class="btn waves-effect waves-light blue disabled">Not Submitted</a> {% else %}
+                <a class="btn waves-effect waves-light blue" onclick="requestPublish('{{row.foss_id}}','{{row.tut_id}}');">Publish</a> {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endspaceless %}

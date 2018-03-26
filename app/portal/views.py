@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Q
-from django.urls import reverse
-from .listGenerator import listGenerator
 from django.utils import timezone
 from django.db.models import Count
 from django.contrib.auth.models import User
 from django.views import View
+from django.http import HttpResponse
 from django.conf import settings
+from django.http.request import QueryDict
+from django.db.models import F
 import logging
 import datetime
 from django.shortcuts import (
@@ -89,6 +89,28 @@ def viewFossDetails(request, foss):
                 'foss': foss,
                 'table': table,
                 'is_admin': is_admin})
+        else:
+            return redirect('login')
+    else:
+        return redirect('login')
+
+
+def submitted(request):
+    '''
+    If the administrator decides to mark a tutorial as submitted
+    the request is transfered to this function.
+    '''
+    if request.user.is_authenticated:
+        is_admin = request.user.groups.filter(name='admin').exists()
+        if is_admin:
+            tutorial_detail.objects.filter(pk=request.POST['tut_id']
+                                           ).update(actual_submission_date=datetime.datetime.now())
+            table = tutorial_detail.objects.filter(foss=request.POST['foss'])
+            return render(request,
+                          'portal/partials/tables/_tutorials.html',
+                          {'foss': request.POST['foss'],
+                           'table': table,
+                           'is_admin': is_admin})
         else:
             return redirect('login')
     else:
@@ -213,14 +235,12 @@ class UserSubmissions(View):
         form = CalendarForm(request.POST)
         is_admin = request.user.groups.filter(name='admin').exists()
         if form.is_valid():
-            if form.cleaned_data['month_type'] == 'Actual':
-                queryResponse = tutorial_detail.objects.filter(
-                    actual_submission_date__month=form.cleaned_data['month']).values()
-            else:
-                queryResponse = tutorial_detail.objects.filter(
-                    expected_submission_date__month=form.cleaned_data['month']).values()
+            table = self.generateTable(request, form)
             return render(request, 'portal/submissions.html',
-                          {'is_admin': is_admin, "table": queryResponse})
+                          {'is_admin': is_admin,
+                           "table": table,
+                           "month": form.cleaned_data['month'],
+                           "month_type": form.cleaned_data['month_type']})
         else:
             if is_admin:
                 return render(request,
@@ -232,8 +252,17 @@ class UserSubmissions(View):
             else:
                 return redirect('login')
 
+    def generateTable(self, request, form):
+        if form.cleaned_data['month_type'] == 'Actual':
+            queryResponse = tutorial_detail.objects.filter(
+                actual_submission_date__month=form.cleaned_data['month']).values()
+        else:
+            queryResponse = tutorial_detail.objects.filter(
+                expected_submission_date__month=form.cleaned_data['month']).values()
+        return queryResponse
 
-def publish(request, foss_id, tut_id):
+
+def publish(request):
     '''
     If the administrator decides to publish a tutorial,
     the request is send to this function.
@@ -241,6 +270,10 @@ def publish(request, foss_id, tut_id):
     if request.user.is_authenticated:
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:
+            tut_id = request.POST['tut_id']
+            foss_id = request.POST['foss_id']
+            month = request.POST['month']
+            month_type = request.POST['month_type']
             tut_id = (tutorial_detail.objects.get(pk=tut_id))
             if tut_id.is_published:
                 return render(
@@ -250,22 +283,18 @@ def publish(request, foss_id, tut_id):
                      'message': 'Looks like the tutorial is already published, if this is a mistake, contact site administrator.',
                      'is_admin': is_admin})
             else:
-                try:
-                    tut_id.is_published = True
-                    tut_id.save()
-                    return render(request,
-                                  'portal/messages.html',
-                                  {"msg_page_name": 'Success',
-                                   'message': 'The tutorial has been published',
-                                   'is_admin': is_admin})
-                except Exception as Error:
-                    logger.error(str(Error))
-                    return render(
-                        request,
-                        'portal/messages.html',
-                        {"msg_page_name": 'Failed',
-                         'message': 'Something went wrong during the transaction, please try again.',
-                         'is_admin': is_admin})
+                tut_id.is_published = True
+                tut_id.save()
+                request.POST = QueryDict(
+                    'month='+month+'&month_type='+month_type)
+                form = CalendarForm(request.POST)
+                form.is_valid()
+                table = UserSubmissions().generateTable(request, form)
+                return render(request, 'portal/partials/tables/_submissions.html',
+                                        {'is_admin': is_admin,
+                                         "table": table,
+                                         "month": form.cleaned_data['month'],
+                                         "month_type": form.cleaned_data['month_type']})
         else:
             return render(
                 request,
@@ -300,54 +329,63 @@ class UserPayment(View):
             return redirect('login')
 
     def post(self, request):
-        form = CalendarForm(request.POST)
-        is_admin = request.user.groups.filter(name='admin').exists()
-        if form.is_valid():
-            if form.cleaned_data['month_type'] == 'actual':
-                queryResponse = tutorial_detail.objects.filter(
-                    actual_submission_date__month=form.cleaned_data['month']).values('foss').annotate(
-                    multiplier=Count('foss'))
-            else:
-                queryResponse = tutorial_detail.objects.filter(
-                    expected_submission_date__month=form.cleaned_data['month']).values('foss').annotate(
-                    multiplier=Count('foss'))
-            for processQuery in queryResponse:
-                processQuery['foss'] = (foss.objects.get(
-                    pk=processQuery['foss'])).user.username
-            processedResponse = listGenerator(list(queryResponse))
-            for processQuery in processedResponse:
-                user_id = (User.objects.get(username=processQuery['foss'])).pk
-                is_paid = payment.objects.filter(
-                    date__month=form.cleaned_data['month'], payment_for=user_id)
-                if is_paid:
-                    processQuery['is_paid'] = True
-                else:
-                    processQuery['is_paid'] = False
-            return render(request,
-                          'portal/payment.html',
-                          {'is_admin': is_admin,
-                           "table": processedResponse,
-                           "month": form.cleaned_data['month']})
-        else:
+        if request.user.is_authenticated:
+            is_admin = request.user.groups.filter(name='admin').exists()
             if is_admin:
-                return render(request,
-                              'portal/forms.html',
-                              {"form_page_name": 'Payment',
-                               'submit_btn_name': "Show List",
-                               'is_admin': is_admin,
-                               "form": form})
+                form = CalendarForm(request.POST)
+                if form.is_valid():
+                    processedResponse = self.generateTable(request, form)
+                    return render(request,
+                                  'portal/payment.html',
+                                  {'is_admin': is_admin,
+                                   "table": processedResponse,
+                                   "month": form.cleaned_data['month'],
+                                   "month_type": form.cleaned_data['month_type']})
+                else:
+                    return render(request,
+                                  'portal/forms.html',
+                                  {"form_page_name": 'Payment',
+                                   'submit_btn_name': "Show List",
+                                   'is_admin': is_admin,
+                                   "form": form})
             else:
                 return redirect('login')
+        else:
+            return redirect('login')
+
+    def generateTable(self, request, form):
+        if form.cleaned_data['month_type'] == 'actual':
+            queryResponse = tutorial_detail.objects.filter(
+                actual_submission_date__month=form.cleaned_data['month']).values(
+                username=F('foss__user_id__username')).annotate(
+                    multiplier=Count('foss'))
+        else:
+            queryResponse = tutorial_detail.objects.filter(
+                expected_submission_date__month=form.cleaned_data['month']).values(
+                username=F('foss__user_id__username')).annotate(
+                multiplier=Count('foss'))
+        for processQuery in queryResponse:
+            is_paid = payment.objects.filter(
+                date__month=form.cleaned_data['month'], payment_for__username=processQuery['username'])
+            if is_paid:
+                processQuery['is_paid'] = True
+            else:
+                processQuery['is_paid'] = False
+        return queryResponse
 
 
-def pay(request, username, multiplier, month):
+def pay(request):
     '''
-    If the adinistrator decides to pay a contributor for
+    If the administrator decides to pay a contributor for
     a month the request is transfered to this page.
     '''
     if request.user.is_authenticated:
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:
+            username = request.POST['username']
+            month = request.POST['month']
+            month_type = request.POST['month_type']
+            multiplier = request.POST['multiplier']
             user_id = (User.objects.get(username=username)).pk
             is_paid = payment.objects.filter(
                 date__month=month, payment_for=user_id)
@@ -367,11 +405,16 @@ def pay(request, username, multiplier, month):
                         approved_by=request.user
                     )
                     data.save()
+                    request.POST = QueryDict(
+                        'month='+month+'&month_type='+month_type)
+                    form = CalendarForm(request.POST)
+                    form.is_valid()
+                    processedResponse = UserPayment().generateTable(request, form)
                     return render(request,
-                                  'portal/messages.html',
-                                  {"msg_page_name": 'Success',
-                                   'message': 'Payment has been successfully made for the user.',
-                                   'is_admin': is_admin})
+                                  'portal/partials/tables/_payment.html',
+                                  {"table": processedResponse,
+                                   "month": form.cleaned_data['month'],
+                                   "month_type": form.cleaned_data['month_type']})
                 except Exception as Error:
                     logger.error(str(Error))
                     return render(

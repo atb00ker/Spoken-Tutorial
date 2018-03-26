@@ -1,0 +1,31 @@
+{% spaceless %}
+<table class="striped highlight">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Assigned By</th>
+            <th>Assigned To</th>
+            <th>Deadline</th>
+            <th>Submit Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in table %}
+        <tr>
+            <td>{{ row.title }}</td>
+            <td>{{ row.assigned_by }}</td>
+            <td>{{ row.foss.user }}</td>
+            <td>{{ row.expected_submission_date }}</td>
+            {% if row.actual_submission_date != None %}
+            <td>{{ row.actual_submission_date }}</td>
+            {% else %}
+            <td>
+                <a class="btn waves-effect waves-light blue" onclick="submitRequest('{{ row.tut_id }}');">
+                    Mark Submitted </a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endspaceless %}
