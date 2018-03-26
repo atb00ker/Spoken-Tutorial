@@ -55,7 +55,7 @@ def admin_panel(request):
                           'portal/admin_panel.html',
                           {'is_admin': is_admin})
         else:
-            return redirect('login')
+            return redirect('dashboard')
     else:
         return redirect('login')
 
@@ -72,7 +72,7 @@ def viewFossTable(request):
                 'table': table,
                 'is_admin': is_admin})
         else:
-            return redirect('login')
+            return redirect('dashboard')
     else:
         return redirect('login')
 
@@ -90,7 +90,7 @@ def viewFossDetails(request, foss):
                 'table': table,
                 'is_admin': is_admin})
         else:
-            return redirect('login')
+            return redirect('dashboard')
     else:
         return redirect('login')
 
@@ -112,7 +112,7 @@ def submitted(request):
                            'table': table,
                            'is_admin': is_admin})
         else:
-            return redirect('login')
+            return redirect('dashboard')
     else:
         return redirect('login')
 
@@ -134,7 +134,7 @@ class AddFossTutorial(View):
                                'submit_btn_name': "Create Tutorial",
                                'is_admin': is_admin})
             else:
-                return redirect('login')
+                return redirect('dashboard')
         else:
             return redirect('login')
 
@@ -159,7 +159,7 @@ class AddFossTutorial(View):
                                    'submit_btn_name': "Create Tutorial",
                                    'is_admin': is_admin})
             else:
-                return redirect('login')
+                return redirect('dashboard')
         else:
             return redirect('login')
 
@@ -181,7 +181,7 @@ class CreateFOSS(View):
                                'submit_btn_name': "Create Foss",
                                'is_admin': is_admin})
             else:
-                return redirect('login')
+                return redirect('dashboard')
         else:
             return redirect('login')
 
@@ -204,7 +204,7 @@ class CreateFOSS(View):
                                    'submit_btn_name': "Create Foss",
                                    'is_admin': is_admin})
             else:
-                return redirect('login')
+                return redirect('dashboard')
         else:
             return redirect('login')
 
@@ -227,37 +227,38 @@ class UserSubmissions(View):
                                'is_admin': is_admin,
                                "form": form})
             else:
-                return redirect('login')
+                return redirect('dashboard')
         else:
             return redirect('login')
 
     def post(self, request):
         form = CalendarForm(request.POST)
         is_admin = request.user.groups.filter(name='admin').exists()
-        if form.is_valid():
-            table = self.generateTable(request, form)
-            return render(request, 'portal/submissions.html',
-                          {'is_admin': is_admin,
-                           "table": table,
-                           "month": form.cleaned_data['month'],
-                           "month_type": form.cleaned_data['month_type']})
-        else:
-            if is_admin:
+        if is_admin:
+            if form.is_valid():
+                table = self.generateTable(request, form)
+                return render(request, 'portal/submissions.html',
+                              {'is_admin': is_admin,
+                               "table": table,
+                               "month": form.cleaned_data['month'],
+                               "month_type": form.cleaned_data['month_type']})
+            else:
                 return render(request,
                               'portal/forms.html',
                               {"form_page_name": 'Payment',
                                'submit_btn_name': "Show List",
                                'is_admin': is_admin,
                                "form": form})
-            else:
-                return redirect('login')
+        else:
+            return redirect('login')
 
     def generateTable(self, request, form):
-        if form.cleaned_data['month_type'] == 'Actual':
-            queryResponse = tutorial_detail.objects.filter(
+        if form.cleaned_data['month_type'] == 'actual':
+            queryResponse = tutorial_detail.objects.exclude(actual_submission_date__isnull=True).filter(
                 actual_submission_date__month=form.cleaned_data['month']).values()
+            print(queryResponse)
         else:
-            queryResponse = tutorial_detail.objects.filter(
+            queryResponse = tutorial_detail.objects.exclude(expected_submission_date__isnull=True).filter(
                 expected_submission_date__month=form.cleaned_data['month']).values()
         return queryResponse
 
@@ -271,7 +272,6 @@ def publish(request):
         is_admin = request.user.groups.filter(name='admin').exists()
         if is_admin:
             tut_id = request.POST['tut_id']
-            foss_id = request.POST['foss_id']
             month = request.POST['month']
             month_type = request.POST['month_type']
             tut_id = (tutorial_detail.objects.get(pk=tut_id))
@@ -288,20 +288,22 @@ def publish(request):
                 request.POST = QueryDict(
                     'month='+month+'&month_type='+month_type)
                 form = CalendarForm(request.POST)
-                form.is_valid()
-                table = UserSubmissions().generateTable(request, form)
-                return render(request, 'portal/partials/tables/_submissions.html',
-                                        {'is_admin': is_admin,
-                                         "table": table,
-                                         "month": form.cleaned_data['month'],
-                                         "month_type": form.cleaned_data['month_type']})
+                if form.is_valid():
+                    table = UserSubmissions().generateTable(request, form)
+                    return render(request, 'portal/partials/tables/_submissions.html',
+                                  {'is_admin': is_admin,
+                                   "table": table,
+                                   "month": form.cleaned_data['month'],
+                                   "month_type": form.cleaned_data['month_type']})
+                else:
+                    logger.Error(
+                        "Publish Form was not valid! Details:\n"+str(request.POST))
         else:
-            return render(
-                request,
-                'portal/messages.html',
-                {"msg_page_name": 'Failed',
-                 'message': 'You do not have the access to make the transaction, please login from an administrator account.',
-                 'is_admin': is_admin})
+            return render(request,
+                          'portal/messages.html',
+                          {"msg_page_name": 'Failed',
+                           'message': 'You do not have the access to make the transaction, please login from an administrator account.',
+                           'is_admin': is_admin})
     else:
         return redirect('login')
 
@@ -355,12 +357,12 @@ class UserPayment(View):
 
     def generateTable(self, request, form):
         if form.cleaned_data['month_type'] == 'actual':
-            queryResponse = tutorial_detail.objects.filter(
+            queryResponse = tutorial_detail.objects.exclude(is_published=False).filter(
                 actual_submission_date__month=form.cleaned_data['month']).values(
                 username=F('foss__user_id__username')).annotate(
                     multiplier=Count('foss'))
         else:
-            queryResponse = tutorial_detail.objects.filter(
+            queryResponse = tutorial_detail.objects.exclude(is_published=False).filter(
                 expected_submission_date__month=form.cleaned_data['month']).values(
                 username=F('foss__user_id__username')).annotate(
                 multiplier=Count('foss'))
@@ -408,13 +410,16 @@ def pay(request):
                     request.POST = QueryDict(
                         'month='+month+'&month_type='+month_type)
                     form = CalendarForm(request.POST)
-                    form.is_valid()
-                    processedResponse = UserPayment().generateTable(request, form)
-                    return render(request,
-                                  'portal/partials/tables/_payment.html',
-                                  {"table": processedResponse,
-                                   "month": form.cleaned_data['month'],
-                                   "month_type": form.cleaned_data['month_type']})
+                    if form.is_valid():
+                        processedResponse = UserPayment().generateTable(request, form)
+                        return render(request,
+                                      'portal/partials/tables/_payment.html',
+                                      {"table": processedResponse,
+                                       "month": form.cleaned_data['month'],
+                                       "month_type": form.cleaned_data['month_type']})
+                    else:
+                        logger.Error(
+                            "Payment Form was not valid! Details:\n"+str(request.POST))
                 except Exception as Error:
                     logger.error(str(Error))
                     return render(

@@ -19,7 +19,7 @@
                 <i class="green-text fas fa-check"></i>
                 {% elif row.actual_submission_date == None %}
                 <a class="btn waves-effect waves-light blue disabled">Not Submitted</a> {% else %}
-                <a class="btn waves-effect waves-light blue" onclick="requestPublish('{{row.foss_id}}','{{row.tut_id}}');">Publish</a> {% endif %}
+                <a class="btn waves-effect waves-light blue" onclick="requestPublish('{{row.tut_id}}');">Publish</a> {% endif %}
             </td>
         </tr>
         {% endfor %}
