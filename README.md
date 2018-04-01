@@ -100,7 +100,7 @@ When you Login from the superuser account you can create new users. These users 
 
 #### **Administrator Panel**
 
-![Admin Panel](https://d2mxuefqeaa7sj.cloudfront.net/s_A6509E00434CBFE85F845312F00EB04E36C43890CCE73C9C71D5171BE61B1945_1522142164041   _admin+panel.png)
+![Admin Panel](https://d2mxuefqeaa7sj.cloudfront.net/s_A6509E00434CBFE85F845312F00EB04E36C43890CCE73C9C71D5171BE61B1945_1522142164041_admin+panel.png)
 
 When you login with the user account that is in Admin group, you get to see “Admin Panel” in the options on the header bar.
 The Admin Panel 3 options.
