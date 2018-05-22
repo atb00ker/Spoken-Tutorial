@@ -6,11 +6,10 @@
 <div class="container">
     <h1 class='section_header'>{{ form_page_name }}</h1>
     <div id='form_section'>
-        <form action="" method="POST" class="post-form">
-            {% csrf_token %}
+        <form action="" method="POST" class="post-form" enctype="multipart/form-data"> {% csrf_token %}
             <!-- Django will take care of spiting the form. -->
             {{ form.as_p }}
-            <button type="submit" class="btn-large waves-effect waves-light {{ community.site_theme_text }}">{{ submit_btn_name }}</button>
+            <button type="submit" class="btn waves-effect waves-light {{ community.site_theme_text }}">{{ submit_btn_name }}</button>
         </form>
     </div>
 </div>

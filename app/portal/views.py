@@ -20,12 +20,14 @@ from django.contrib.auth import (
 from .forms import (
     FossCreationForm,
     CalendarForm,
-    TutorialCreationForm
+    TutorialCreationForm,
+    VideoForm
 )
 from portal.models import (
     foss,
     payment,
-    tutorial_detail
+    tutorial_detail,
+    UploadVideo
 )
 
 # Logger for the file, settings for this logger
@@ -376,6 +378,37 @@ class UserPayment(View):
         return queryResponse
 
 
+class UploadFile(View):
+    """
+    This class is used to upload the video file to
+    `/media` folder.
+    """
+
+    def get(self, request):
+        form = VideoForm()
+        return render(request,
+                      'portal/forms.html',
+                      {'form': form,
+                       "form_page_name": 'Upload',
+                       'submit_btn_name': "Upload"})
+
+    def post(self, request):
+        form = VideoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return render(
+                request,
+                'portal/messages.html',
+                {"msg_page_name": 'Success',
+                 'message': 'Woohoo! Upload Complete!'})
+        else:
+            return render(request,
+                          'portal/forms.html',
+                          {'form': form,
+                           "form_page_name": 'Upload',
+                           'submit_btn_name': "Upload"})
+
+
 def pay(request):
     '''
     If the administrator decides to pay a contributor for
@@ -437,3 +470,7 @@ def pay(request):
                  'is_admin': is_admin})
     else:
         return redirect('login')
+
+
+21: Choosing the project out of the 3 main options, reading the repository code.
+22: Research to begin with the method of the

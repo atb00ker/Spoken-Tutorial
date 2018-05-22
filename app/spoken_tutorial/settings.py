@@ -115,6 +115,9 @@ LOGOUT_REDIRECT_URL = 'dashboard'
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 logger = logging.getLogger("PaymentPortalErrors")
 formatter = logging.Formatter(
     '%(filename)s[%(lineno)d]: %(message)s')

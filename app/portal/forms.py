@@ -4,7 +4,10 @@ the portal app.
 '''
 from django import forms
 from django.contrib.auth.models import User
-from portal.models import foss
+from portal.models import (
+    foss,
+    UploadVideo
+)
 import datetime
 
 
@@ -56,3 +59,27 @@ class CalendarForm(forms.Form):
         label='Submitted',
         choices=month_type_list)
     month = forms.ChoiceField(choices=month_list)
+
+
+class VideoForm(forms.ModelForm):
+    class Meta:
+        model = UploadVideo
+        fields = ('tutorial', 'document',)
+
+        labels = {
+            "tutorial": ("Tutorial Name"),
+            "document": ("Video"),
+        }
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        file = cleaned_data.get("document")
+        file_exts = ('.ogv', '.mov')
+
+        if file is None:
+            raise forms.ValidationError('Please select a file!')
+        if file.content_type != 'video/ogg' and file.content_type != 'video/quicktime':
+            print (file.content_type)
+            raise forms.ValidationError(
+                'Video accepted only in: %s' % ' '.join(file_exts))
+        return cleaned_data

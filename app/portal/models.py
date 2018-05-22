@@ -56,3 +56,18 @@ class payment(models.Model):
 
     def __str__(self):
         return str(self.payment_for)
+
+
+def user_directory_path(self, filename):
+    folderName = 'videos/%s/%s' % (self.tutorial, filename)
+    return folderName
+
+
+class UploadVideo(models.Model):
+    tutorial = models.CharField(max_length=255)
+    # document = models.FileField(upload_to='videos')
+    document = models.FileField(upload_to=user_directory_path)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.tutorial
